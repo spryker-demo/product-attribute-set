@@ -1,8 +1,5 @@
 <?xml version="1.0"?>
-<database xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          name="zed"
-          xsi:noNamespaceSchemaLocation="http://static.spryker.com/schema-01.xsd"
-          namespace="Orm\Zed\ProductAttributeSet\Persistence" package="src.Orm.Zed.ProductAttributeSet.Persistence">
+<database xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="zed" xsi:noNamespaceSchemaLocation="http://static.spryker.com/schema-01.xsd" namespace="Orm\Zed\ProductAttributeSet\Persistence" package="src.Orm.Zed.ProductAttributeSet.Persistence">
 
     <table name="spy_product_attribute_set" identifierQuoting="true">
         <column name="id_product_attribute_set" required="true" type="INTEGER" autoIncrement="true" primaryKey="true"/>
