@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<database xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          name="zed"
+          xsi:noNamespaceSchemaLocation="http://static.spryker.com/schema-01.xsd"
+          namespace="Orm\Zed\ProductAttributeSet\Persistence" package="src.Orm.Zed.ProductAttributeSet.Persistence">
+
+    <table name="spy_product_attribute_set" identifierQuoting="true">
+        <column name="id_product_attribute_set" required="true" type="INTEGER" autoIncrement="true" primaryKey="true"/>
+        <column name="name" required="true" type="VARCHAR" size="255"/>
+
+        <unique name="spy_product_attribute_set-unique-name">
+            <unique-column name="name"/>
+        </unique>
+    </table>
+
+    <table name="spy_product_attribute_set_to_spy_product_management_attribute">
+        <column name="id_product_attribute_set_to_spy_product_management_attribute" required="true" type="INTEGER" autoIncrement="true" primaryKey="true"/>
+        <column name="fk_product_attribute_set" type="INTEGER" required="false"/>
+        <column name="fk_product_management_attribute" type="INTEGER" required="false"/>
+
+        <foreign-key name="spy_p_attribute_set_to_spy_p_m_attribute-fk_p_attribute_set" foreignTable="spy_product_attribute_set" onDelete="CASCADE">
+            <reference local="fk_product_attribute_set" foreign="id_product_attribute_set"/>
+        </foreign-key>
+        <foreign-key name="spy_p_attribute_set_to_spy_p_m_attribute-fk_p_m_attribute" foreignTable="spy_product_management_attribute">
+            <reference local="fk_product_management_attribute" foreign="id_product_management_attribute"/>
+        </foreign-key>
+    </table>
+
+</database>
