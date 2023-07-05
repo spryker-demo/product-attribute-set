@@ -1,7 +1,7 @@
 {
     "name": "spryker-demo/product-attribute-set",
     "type": "library",
-    "description": "ProductAttributeSet module",
+    "description": "Product attribute set module",
     "license": "proprietary",
     "require": {
         "php": ">=8.0",
