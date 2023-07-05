@@ -52,4 +52,20 @@ class ProductAttributeSetRepository extends AbstractRepository implements Produc
         return $this->getFactory()->createProductAttributeSetMapper()
             ->mapProductAttributeSetEntityToProductAttributeSetTransfer($productAttributeSetEntity, new ProductAttributeSetTransfer());
     }
+
+    /**
+     * @return array<\Generated\Shared\Transfer\ProductAttributeSetTransfer>
+     */
+    public function getProductAttributeSets(): array
+    {
+        $productAttributeSetsEntities = $this->getFactory()->getProductAttributeSetQuery()->find();
+
+        $productAttributeSetsTransfers = [];
+        foreach ($productAttributeSetsEntities as $productAttributeSetEntity) {
+            $productAttributeSetsTransfers[] = $this->getFactory()->createProductAttributeSetMapper()
+                ->mapProductAttributeSetEntityToProductAttributeSetTransfer($productAttributeSetEntity, new ProductAttributeSetTransfer());
+        }
+
+        return $productAttributeSetsTransfers;
+    }
 }

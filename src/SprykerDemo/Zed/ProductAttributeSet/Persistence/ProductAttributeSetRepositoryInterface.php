@@ -24,4 +24,9 @@ interface ProductAttributeSetRepositoryInterface
      * @return \Generated\Shared\Transfer\ProductAttributeSetTransfer|null
      */
     public function getProductAttributeSetByName(string $name): ?ProductAttributeSetTransfer;
+
+    /**
+     * @return array<\Generated\Shared\Transfer\ProductAttributeSetTransfer>
+     */
+    public function getProductAttributeSets(): array;
 }

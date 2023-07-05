@@ -78,4 +78,26 @@ class ProductAttributeSetReader implements ProductAttributeSetReaderInterface
     {
         return $this->repository->getProductAttributeSetByName($name);
     }
+
+    /**
+     * @return array<\Generated\Shared\Transfer\ProductAttributeSetTransfer>
+     */
+    public function getProductAttributeSets(): array
+    {
+        $productAttributeSets = $this->repository->getProductAttributeSets();
+        $productAttributeCollection = $this->productAttributeFacade->getProductAttributeCollection();
+        foreach ($productAttributeSets as $productAttributeSetTransfer) {
+            $productManagementAttributeTransfers = array_filter(
+                $productAttributeCollection,
+                static function (ProductManagementAttributeTransfer $productManagementAttributeTransfer) use ($productAttributeSetTransfer) {
+                    return in_array($productManagementAttributeTransfer->getIdProductManagementAttribute(), $productAttributeSetTransfer->getProductManagementAttributeIds(), true);
+                },
+            );
+            foreach ($productManagementAttributeTransfers as $productManagementAttributeTransfer) {
+                $productAttributeSetTransfer->addProductManagementAttribute($productManagementAttributeTransfer);
+            }
+        }
+
+        return $productAttributeSets;
+    }
 }

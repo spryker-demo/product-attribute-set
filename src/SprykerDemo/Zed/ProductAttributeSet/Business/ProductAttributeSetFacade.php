@@ -71,4 +71,16 @@ class ProductAttributeSetFacade extends AbstractFacade implements ProductAttribu
     {
         $this->getEntityManager()->deleteProductAttributeSet($productAttributeSetTransfer);
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @api
+     *
+     * @return array<\Generated\Shared\Transfer\ProductAttributeSetTransfer>
+     */
+    public function getProductAttributeSets(): array
+    {
+        return $this->getFactory()->createProductAttributeSetReader()->getProductAttributeSets();
+    }
 }

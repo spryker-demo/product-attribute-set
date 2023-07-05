@@ -58,4 +58,14 @@ interface ProductAttributeSetFacadeInterface
      * @return void
      */
     public function deleteProductAttributeSet(ProductAttributeSetTransfer $productAttributeSetTransfer): void;
+
+    /**
+     * Specification:
+     * - Returns all product attribute sets.
+     *
+     * @api
+     *
+     * @return array<\Generated\Shared\Transfer\ProductAttributeSetTransfer>
+     */
+    public function getProductAttributeSets(): array;
 }
