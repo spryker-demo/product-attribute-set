@@ -3,7 +3,7 @@
     <transfer name="ProductAttributeSet">
         <property name="idProductAttributeSet" type="int"/>
         <property name="name" type="string"/>
-        <property name="productManagementAttributeIds" type="array"/>
+        <property name="productManagementAttributeIds" type="array" singular="productManagementAttributeId"/>
         <property name="productManagementAttributes" type="ProductManagementAttribute[]" singular="productManagementAttribute"/>
     </transfer>
 </transfers>

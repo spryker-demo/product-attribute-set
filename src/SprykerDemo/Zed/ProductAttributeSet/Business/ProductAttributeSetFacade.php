@@ -12,6 +12,7 @@ use Spryker\Zed\Kernel\Business\AbstractFacade;
 
 /**
  * @method \SprykerDemo\Zed\ProductAttributeSet\Business\ProductAttributeSetBusinessFactory getFactory()
+ * @method \SprykerDemo\Zed\ProductAttributeSet\Persistence\ProductAttributeSetEntityManager getEntityManager()
  */
 class ProductAttributeSetFacade extends AbstractFacade implements ProductAttributeSetFacadeInterface
 {
@@ -26,7 +27,7 @@ class ProductAttributeSetFacade extends AbstractFacade implements ProductAttribu
      */
     public function findProductAttributeSetById(int $idProductAttributeSet): ?ProductAttributeSetTransfer
     {
-        return $this->getFactory()->createProductAttributeSetReader()->getProductAttributeSetById($idProductAttributeSet);
+        return $this->getFactory()->createProductAttributeSetReader()->findProductAttributeSetById($idProductAttributeSet);
     }
 
     /**
@@ -54,7 +55,7 @@ class ProductAttributeSetFacade extends AbstractFacade implements ProductAttribu
      */
     public function saveProductAttributeSet(ProductAttributeSetTransfer $productAttributeSetTransfer): ProductAttributeSetTransfer
     {
-        return $this->getFactory()->createProductAttributeSetSaver()->save($productAttributeSetTransfer);
+        return $this->getEntityManager()->saveProductAttributeSet($productAttributeSetTransfer);
     }
 
     /**
@@ -68,6 +69,6 @@ class ProductAttributeSetFacade extends AbstractFacade implements ProductAttribu
      */
     public function deleteProductAttributeSet(ProductAttributeSetTransfer $productAttributeSetTransfer): void
     {
-        $this->getFactory()->createProductAttributeSetDeleter()->delete($productAttributeSetTransfer);
+        $this->getEntityManager()->deleteProductAttributeSet($productAttributeSetTransfer);
     }
 }

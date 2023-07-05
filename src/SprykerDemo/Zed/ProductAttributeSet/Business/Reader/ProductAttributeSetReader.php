@@ -41,9 +41,9 @@ class ProductAttributeSetReader implements ProductAttributeSetReaderInterface
      *
      * @return \Generated\Shared\Transfer\ProductAttributeSetTransfer|null
      */
-    public function getProductAttributeSetById(int $idProductAttributeSet): ?ProductAttributeSetTransfer
+    public function findProductAttributeSetById(int $idProductAttributeSet): ?ProductAttributeSetTransfer
     {
-        $productAttributeSetTransfer = $this->repository->getProductAttributeSetById($idProductAttributeSet);
+        $productAttributeSetTransfer = $this->repository->findProductAttributeSetById($idProductAttributeSet);
 
         if ($productAttributeSetTransfer === null) {
             return null;

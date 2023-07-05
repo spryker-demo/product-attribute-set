@@ -20,7 +20,7 @@ class ProductAttributeSetRepository extends AbstractRepository implements Produc
      *
      * @return \Generated\Shared\Transfer\ProductAttributeSetTransfer|null
      */
-    public function getProductAttributeSetById(int $idProductAttributeSet): ?ProductAttributeSetTransfer
+    public function findProductAttributeSetById(int $idProductAttributeSet): ?ProductAttributeSetTransfer
     {
         $productAttributeSetEntity = $this->getFactory()->getProductAttributeSetQuery()
             ->filterByIdProductAttributeSet($idProductAttributeSet)

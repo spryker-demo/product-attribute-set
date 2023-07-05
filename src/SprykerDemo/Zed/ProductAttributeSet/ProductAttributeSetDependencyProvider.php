@@ -10,9 +10,6 @@ namespace SprykerDemo\Zed\ProductAttributeSet;
 use Spryker\Zed\Kernel\AbstractBundleDependencyProvider;
 use Spryker\Zed\Kernel\Container;
 
-/**
- * @method \SprykerDemo\Zed\ProductAttributeSet\ProductAttributeSetConfig getConfig()
- */
 class ProductAttributeSetDependencyProvider extends AbstractBundleDependencyProvider
 {
     /**

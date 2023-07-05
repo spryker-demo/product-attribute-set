@@ -16,7 +16,7 @@ interface ProductAttributeSetRepositoryInterface
      *
      * @return \Generated\Shared\Transfer\ProductAttributeSetTransfer|null
      */
-    public function getProductAttributeSetById(int $idProductAttributeSet): ?ProductAttributeSetTransfer;
+    public function findProductAttributeSetById(int $idProductAttributeSet): ?ProductAttributeSetTransfer;
 
     /**
      * @param string $name
