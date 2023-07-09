@@ -11,7 +11,7 @@ use Spryker\Zed\Kernel\Business\AbstractBusinessFactory;
 use Spryker\Zed\ProductAttribute\Business\ProductAttributeFacadeInterface;
 use SprykerDemo\Zed\ProductAttributeSet\Business\Reader\ProductAttributeSetReader;
 use SprykerDemo\Zed\ProductAttributeSet\Business\Reader\ProductAttributeSetReaderInterface;
-use SprykerDemo\Zed\ProductAttributeSetGui\ProductAttributeSetGuiDependencyProvider;
+use SprykerDemo\Zed\ProductAttributeSet\ProductAttributeSetDependencyProvider;
 
 /**
  * @method \SprykerDemo\Zed\ProductAttributeSet\Persistence\ProductAttributeSetEntityManagerInterface getEntityManager()
@@ -19,12 +19,12 @@ use SprykerDemo\Zed\ProductAttributeSetGui\ProductAttributeSetGuiDependencyProvi
  */
 class ProductAttributeSetBusinessFactory extends AbstractBusinessFactory
 {
- /**
-  * @return \Spryker\Zed\ProductAttribute\Business\ProductAttributeFacadeInterface
-  */
+  /**
+   * @return \Spryker\Zed\ProductAttribute\Business\ProductAttributeFacadeInterface
+   */
     public function getProductAttributeFacade(): ProductAttributeFacadeInterface
     {
-        return $this->getProvidedDependency(ProductAttributeSetGuiDependencyProvider::FACADE_PRODUCT_ATTRIBUTE);
+        return $this->getProvidedDependency(ProductAttributeSetDependencyProvider::FACADE_PRODUCT_ATTRIBUTE);
     }
 
     /**
