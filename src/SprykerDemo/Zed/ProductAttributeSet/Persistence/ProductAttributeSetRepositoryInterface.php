@@ -7,23 +7,17 @@
 
 namespace SprykerDemo\Zed\ProductAttributeSet\Persistence;
 
+use Generated\Shared\Transfer\ProductAttributeSetCriteriaTransfer;
 use Generated\Shared\Transfer\ProductAttributeSetTransfer;
 
 interface ProductAttributeSetRepositoryInterface
 {
     /**
-     * @param int $idProductAttributeSet
+     * @param \Generated\Shared\Transfer\ProductAttributeSetCriteriaTransfer $productAttributeSetCriteriaTransfer
      *
      * @return \Generated\Shared\Transfer\ProductAttributeSetTransfer|null
      */
-    public function findProductAttributeSetById(int $idProductAttributeSet): ?ProductAttributeSetTransfer;
-
-    /**
-     * @param string $name
-     *
-     * @return \Generated\Shared\Transfer\ProductAttributeSetTransfer|null
-     */
-    public function getProductAttributeSetByName(string $name): ?ProductAttributeSetTransfer;
+    public function findProductAttributeSetByCriteria(ProductAttributeSetCriteriaTransfer $productAttributeSetCriteriaTransfer): ?ProductAttributeSetTransfer;
 
     /**
      * @return array<\Generated\Shared\Transfer\ProductAttributeSetTransfer>

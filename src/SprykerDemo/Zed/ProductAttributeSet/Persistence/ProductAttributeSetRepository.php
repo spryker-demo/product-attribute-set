@@ -7,6 +7,7 @@
 
 namespace SprykerDemo\Zed\ProductAttributeSet\Persistence;
 
+use Generated\Shared\Transfer\ProductAttributeSetCriteriaTransfer;
 use Generated\Shared\Transfer\ProductAttributeSetTransfer;
 use Spryker\Zed\Kernel\Persistence\AbstractRepository;
 
@@ -16,15 +17,24 @@ use Spryker\Zed\Kernel\Persistence\AbstractRepository;
 class ProductAttributeSetRepository extends AbstractRepository implements ProductAttributeSetRepositoryInterface
 {
     /**
-     * @param int $idProductAttributeSet
+     * @param \Generated\Shared\Transfer\ProductAttributeSetCriteriaTransfer $productAttributeSetCriteriaTransfer
      *
      * @return \Generated\Shared\Transfer\ProductAttributeSetTransfer|null
      */
-    public function findProductAttributeSetById(int $idProductAttributeSet): ?ProductAttributeSetTransfer
+    public function findProductAttributeSetByCriteria(ProductAttributeSetCriteriaTransfer $productAttributeSetCriteriaTransfer): ?ProductAttributeSetTransfer
     {
-        $productAttributeSetEntity = $this->getFactory()->getProductAttributeSetQuery()
-            ->filterByIdProductAttributeSet($idProductAttributeSet)
-            ->findOne();
+        $productAttributeSetQuery = $this->getFactory()->getProductAttributeSetQuery();
+        if($productAttributeSetCriteriaTransfer->getIdProductAttributeSet()) {
+            $productAttributeSetQuery->filterByIdProductAttributeSet(
+                $productAttributeSetCriteriaTransfer->getIdProductAttributeSet()
+            );
+        }
+        if($productAttributeSetCriteriaTransfer->getName()) {
+            $productAttributeSetQuery->filterByName(
+                $productAttributeSetCriteriaTransfer->getName()
+            );
+        }
+        $productAttributeSetEntity = $productAttributeSetQuery->findOne();
 
         if (!$productAttributeSetEntity) {
             return null;
@@ -32,25 +42,7 @@ class ProductAttributeSetRepository extends AbstractRepository implements Produc
 
         return $this->getFactory()->createProductAttributeSetMapper()
             ->mapProductAttributeSetEntityToProductAttributeSetTransfer($productAttributeSetEntity, new ProductAttributeSetTransfer());
-    }
 
-    /**
-     * @param string $name
-     *
-     * @return \Generated\Shared\Transfer\ProductAttributeSetTransfer|null
-     */
-    public function getProductAttributeSetByName(string $name): ?ProductAttributeSetTransfer
-    {
-        $productAttributeSetEntity = $this->getFactory()->getProductAttributeSetQuery()
-            ->filterByName($name)
-            ->findOne();
-
-        if (!$productAttributeSetEntity) {
-            return null;
-        }
-
-        return $this->getFactory()->createProductAttributeSetMapper()
-            ->mapProductAttributeSetEntityToProductAttributeSetTransfer($productAttributeSetEntity, new ProductAttributeSetTransfer());
     }
 
     /**

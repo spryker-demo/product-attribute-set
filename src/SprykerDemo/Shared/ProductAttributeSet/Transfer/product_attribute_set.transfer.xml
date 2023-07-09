@@ -6,4 +6,9 @@
         <property name="productManagementAttributeIds" type="array" singular="productManagementAttributeId"/>
         <property name="productManagementAttributes" type="ProductManagementAttribute[]" singular="productManagementAttribute"/>
     </transfer>
+
+    <transfer name="ProductAttributeSetCriteria">
+        <property name="idProductAttributeSet" type="int"/>
+        <property name="name" type="string"/>
+    </transfer>
 </transfers>

@@ -7,6 +7,7 @@
 
 namespace SprykerDemo\Zed\ProductAttributeSet\Business\Reader;
 
+use Generated\Shared\Transfer\ProductAttributeSetCriteriaTransfer;
 use Generated\Shared\Transfer\ProductAttributeSetTransfer;
 use Generated\Shared\Transfer\ProductManagementAttributeTransfer;
 use Spryker\Zed\ProductAttribute\Business\ProductAttributeFacadeInterface;
@@ -43,7 +44,10 @@ class ProductAttributeSetReader implements ProductAttributeSetReaderInterface
      */
     public function findProductAttributeSetById(int $idProductAttributeSet): ?ProductAttributeSetTransfer
     {
-        $productAttributeSetTransfer = $this->repository->findProductAttributeSetById($idProductAttributeSet);
+        $productAttributeSetCriteriaTransfer = new ProductAttributeSetCriteriaTransfer();
+        $productAttributeSetCriteriaTransfer->setIdProductAttributeSet($idProductAttributeSet);
+
+        $productAttributeSetTransfer = $this->repository->findProductAttributeSetByCriteria($productAttributeSetCriteriaTransfer);
 
         if ($productAttributeSetTransfer === null) {
             return null;
@@ -76,7 +80,10 @@ class ProductAttributeSetReader implements ProductAttributeSetReaderInterface
      */
     public function getProductAttributeSetByName(string $name): ?ProductAttributeSetTransfer
     {
-        return $this->repository->getProductAttributeSetByName($name);
+        $productAttributeSetCriteriaTransfer = new ProductAttributeSetCriteriaTransfer();
+        $productAttributeSetCriteriaTransfer->setName($name);
+
+        return $this->repository->findProductAttributeSetByCriteria($productAttributeSetCriteriaTransfer);
     }
 
     /**
