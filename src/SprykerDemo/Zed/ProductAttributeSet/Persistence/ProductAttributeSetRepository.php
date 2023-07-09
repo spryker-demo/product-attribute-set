@@ -24,25 +24,23 @@ class ProductAttributeSetRepository extends AbstractRepository implements Produc
     public function findProductAttributeSetByCriteria(ProductAttributeSetCriteriaTransfer $productAttributeSetCriteriaTransfer): ?ProductAttributeSetTransfer
     {
         $productAttributeSetQuery = $this->getFactory()->getProductAttributeSetQuery();
-        if($productAttributeSetCriteriaTransfer->getIdProductAttributeSet()) {
+        if ($productAttributeSetCriteriaTransfer->getIdProductAttributeSet()) {
             $productAttributeSetQuery->filterByIdProductAttributeSet(
-                $productAttributeSetCriteriaTransfer->getIdProductAttributeSet()
+                $productAttributeSetCriteriaTransfer->getIdProductAttributeSet(),
             );
         }
-        if($productAttributeSetCriteriaTransfer->getName()) {
+        if ($productAttributeSetCriteriaTransfer->getName()) {
             $productAttributeSetQuery->filterByName(
-                $productAttributeSetCriteriaTransfer->getName()
+                $productAttributeSetCriteriaTransfer->getName(),
             );
         }
         $productAttributeSetEntity = $productAttributeSetQuery->findOne();
-
         if (!$productAttributeSetEntity) {
             return null;
         }
 
         return $this->getFactory()->createProductAttributeSetMapper()
             ->mapProductAttributeSetEntityToProductAttributeSetTransfer($productAttributeSetEntity, new ProductAttributeSetTransfer());
-
     }
 
     /**
