@@ -5,7 +5,6 @@
     "license": "proprietary",
     "require": {
         "php": ">=8.0",
-        "spryker-demo/product-attribute-set-gui": "* as 1.0.0",
         "spryker/kernel": "^3.70.0",
         "spryker/product-attribute": "^1.10.0"
     },
