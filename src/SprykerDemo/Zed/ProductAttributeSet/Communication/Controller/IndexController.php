@@ -29,7 +29,7 @@ class IndexController extends AbstractController
             return $this->jsonResponse(['error' => 'Attribute set id is required'], 400);
         }
 
-        $attributeSet = $this->getFacade()->findProductAttributeSetById($attributeSetId);
+        $attributeSet = $this->getFacade()->findProductAttributeSetById((int)$attributeSetId);
 
         if (!$attributeSet) {
             return $this->jsonResponse(['error' => 'Attribute set not found'], 404);
