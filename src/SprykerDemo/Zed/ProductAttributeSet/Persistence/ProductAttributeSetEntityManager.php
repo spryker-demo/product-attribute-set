@@ -65,7 +65,6 @@ class ProductAttributeSetEntityManager extends AbstractEntityManager implements 
         $this->deleteAttributeRelations($productAttributeSetEntity->getIdProductAttributeSet(), $storeIdsToRemove);
 
         return (new ProductAttributeSetTransfer())->fromArray($productAttributeSetEntity->toArray(), true);
-
     }
 
     /**
