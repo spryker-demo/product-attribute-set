@@ -11,18 +11,33 @@ use Generated\Shared\Transfer\ProductAttributeSetTransfer;
 use Orm\Zed\ProductAttributeSet\Persistence\SpyProductAttributeSet;
 use Orm\Zed\ProductAttributeSet\Persistence\SpyProductAttributeSetToSpyProductManagementAttribute;
 use Spryker\Zed\Kernel\Persistence\AbstractEntityManager;
+use Spryker\Zed\Kernel\Persistence\EntityManager\TransactionTrait;
 
 /**
  * @method \SprykerDemo\Zed\ProductAttributeSet\Persistence\ProductAttributeSetPersistenceFactory getFactory()
  */
 class ProductAttributeSetEntityManager extends AbstractEntityManager implements ProductAttributeSetEntityManagerInterface
 {
+    use TransactionTrait;
+
     /**
      * @param \Generated\Shared\Transfer\ProductAttributeSetTransfer $productAttributeSetTransfer
      *
      * @return \Generated\Shared\Transfer\ProductAttributeSetTransfer
      */
     public function saveProductAttributeSet(ProductAttributeSetTransfer $productAttributeSetTransfer): ProductAttributeSetTransfer
+    {
+        return $this->getTransactionHandler()->handleTransaction(function () use ($productAttributeSetTransfer): ProductAttributeSetTransfer {
+            return $this->executeSaveProductAttributeSet($productAttributeSetTransfer);
+        });
+    }
+
+    /**
+     * @param \Generated\Shared\Transfer\ProductAttributeSetTransfer $productAttributeSetTransfer
+     *
+     * @return \Generated\Shared\Transfer\ProductAttributeSetTransfer
+     */
+    protected function executeSaveProductAttributeSet(ProductAttributeSetTransfer $productAttributeSetTransfer): ProductAttributeSetTransfer
     {
         $productAttributeSetEntity = null;
         if ($productAttributeSetTransfer->getIdProductAttributeSet()) {
@@ -50,6 +65,7 @@ class ProductAttributeSetEntityManager extends AbstractEntityManager implements 
         $this->deleteAttributeRelations($productAttributeSetEntity->getIdProductAttributeSet(), $storeIdsToRemove);
 
         return (new ProductAttributeSetTransfer())->fromArray($productAttributeSetEntity->toArray(), true);
+
     }
 
     /**

@@ -9,7 +9,6 @@ namespace SprykerDemo\Zed\ProductAttributeSet\Business\Reader;
 
 use Generated\Shared\Transfer\ProductAttributeSetCriteriaTransfer;
 use Generated\Shared\Transfer\ProductAttributeSetTransfer;
-use Generated\Shared\Transfer\ProductManagementAttributeTransfer;
 use Spryker\Zed\ProductAttribute\Business\ProductAttributeFacadeInterface;
 use SprykerDemo\Zed\ProductAttributeSet\Persistence\ProductAttributeSetRepositoryInterface;
 
@@ -53,22 +52,7 @@ class ProductAttributeSetReader implements ProductAttributeSetReaderInterface
             return null;
         }
 
-        $productAttributeCollection = $this->productAttributeFacade->getProductAttributeCollection();
-
-        $productManagementAttributeTransfers = array_filter(
-            $productAttributeCollection,
-            function (ProductManagementAttributeTransfer $productManagementAttributeTransfer) use ($productAttributeSetTransfer) {
-                return in_array(
-                    $productManagementAttributeTransfer->getIdProductManagementAttribute(),
-                    $productAttributeSetTransfer->getProductManagementAttributeIds(),
-                    true,
-                );
-            },
-        );
-
-        foreach ($productManagementAttributeTransfers as $productManagementAttributeTransfer) {
-            $productAttributeSetTransfer->addProductManagementAttribute($productManagementAttributeTransfer);
-        }
+        $this->addProductManagementAttributesToProductAttributeSet($productAttributeSetTransfer);
 
         return $productAttributeSetTransfer;
     }
@@ -92,19 +76,35 @@ class ProductAttributeSetReader implements ProductAttributeSetReaderInterface
     public function getProductAttributeSets(): array
     {
         $productAttributeSets = $this->repository->getProductAttributeSets();
-        $productAttributeCollection = $this->productAttributeFacade->getProductAttributeCollection();
         foreach ($productAttributeSets as $productAttributeSetTransfer) {
-            $productManagementAttributeTransfers = array_filter(
-                $productAttributeCollection,
-                static function (ProductManagementAttributeTransfer $productManagementAttributeTransfer) use ($productAttributeSetTransfer) {
-                    return in_array($productManagementAttributeTransfer->getIdProductManagementAttribute(), $productAttributeSetTransfer->getProductManagementAttributeIds(), true);
-                },
-            );
-            foreach ($productManagementAttributeTransfers as $productManagementAttributeTransfer) {
+            $this->addProductManagementAttributesToProductAttributeSet($productAttributeSetTransfer);
+        }
+
+        return $productAttributeSets;
+    }
+
+    /**
+     * @param \Generated\Shared\Transfer\ProductAttributeSetTransfer $productAttributeSetTransfer
+     *
+     * @return \Generated\Shared\Transfer\ProductAttributeSetTransfer
+     */
+    protected function addProductManagementAttributesToProductAttributeSet(
+        ProductAttributeSetTransfer $productAttributeSetTransfer
+    ): ProductAttributeSetTransfer {
+        $productAttributeCollection = $this->productAttributeFacade->getProductAttributeCollection();
+
+        foreach ($productAttributeCollection as $productManagementAttributeTransfer) {
+            if (
+                in_array(
+                    $productManagementAttributeTransfer->getIdProductManagementAttribute(),
+                    $productAttributeSetTransfer->getProductManagementAttributeIds(),
+                    true,
+                )
+            ) {
                 $productAttributeSetTransfer->addProductManagementAttribute($productManagementAttributeTransfer);
             }
         }
 
-        return $productAttributeSets;
+        return $productAttributeSetTransfer;
     }
 }

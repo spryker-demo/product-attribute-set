@@ -19,9 +19,9 @@ use SprykerDemo\Zed\ProductAttributeSet\ProductAttributeSetDependencyProvider;
  */
 class ProductAttributeSetBusinessFactory extends AbstractBusinessFactory
 {
-  /**
-   * @return \Spryker\Zed\ProductAttribute\Business\ProductAttributeFacadeInterface
-   */
+    /**
+     * @return \Spryker\Zed\ProductAttribute\Business\ProductAttributeFacadeInterface
+     */
     public function getProductAttributeFacade(): ProductAttributeFacadeInterface
     {
         return $this->getProvidedDependency(ProductAttributeSetDependencyProvider::FACADE_PRODUCT_ATTRIBUTE);
