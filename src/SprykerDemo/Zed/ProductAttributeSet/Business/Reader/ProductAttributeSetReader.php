@@ -52,7 +52,8 @@ class ProductAttributeSetReader implements ProductAttributeSetReaderInterface
             return null;
         }
 
-        $this->addProductManagementAttributesToProductAttributeSet($productAttributeSetTransfer);
+        $productManagementAttributeCollectionTransfer = $this->productAttributeFacade->getProductAttributeCollection();
+        $this->addProductManagementAttributesToProductAttributeSet($productAttributeSetTransfer, $productManagementAttributeCollectionTransfer);
 
         return $productAttributeSetTransfer;
     }
@@ -76,8 +77,10 @@ class ProductAttributeSetReader implements ProductAttributeSetReaderInterface
     public function getProductAttributeSets(): array
     {
         $productAttributeSets = $this->repository->getProductAttributeSets();
+        $productManagementAttributeCollectionTransfer = $this->productAttributeFacade->getProductAttributeCollection();
+
         foreach ($productAttributeSets as $productAttributeSetTransfer) {
-            $this->addProductManagementAttributesToProductAttributeSet($productAttributeSetTransfer);
+            $this->addProductManagementAttributesToProductAttributeSet($productAttributeSetTransfer, $productManagementAttributeCollectionTransfer);
         }
 
         return $productAttributeSets;
@@ -85,15 +88,15 @@ class ProductAttributeSetReader implements ProductAttributeSetReaderInterface
 
     /**
      * @param \Generated\Shared\Transfer\ProductAttributeSetTransfer $productAttributeSetTransfer
+     * @param array<\Generated\Shared\Transfer\ProductManagementAttributeTransfer> $productManagementAttributeCollectionTransfer
      *
      * @return \Generated\Shared\Transfer\ProductAttributeSetTransfer
      */
     protected function addProductManagementAttributesToProductAttributeSet(
-        ProductAttributeSetTransfer $productAttributeSetTransfer
+        ProductAttributeSetTransfer $productAttributeSetTransfer,
+        array $productManagementAttributeCollectionTransfer
     ): ProductAttributeSetTransfer {
-        $productAttributeCollection = $this->productAttributeFacade->getProductAttributeCollection();
-
-        foreach ($productAttributeCollection as $productManagementAttributeTransfer) {
+        foreach ($productManagementAttributeCollectionTransfer as $productManagementAttributeTransfer) {
             if (
                 in_array(
                     $productManagementAttributeTransfer->getIdProductManagementAttribute(),
