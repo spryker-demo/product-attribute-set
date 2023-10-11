@@ -41,7 +41,7 @@ class ProductAttributeSetFacade extends AbstractFacade implements ProductAttribu
      */
     public function findProductAttributeSetByName(string $name): ?ProductAttributeSetTransfer
     {
-        return $this->getFactory()->createProductAttributeSetReader()->getProductAttributeSetByName($name);
+        return $this->getFactory()->createProductAttributeSetReader()->findProductAttributeSetByName($name);
     }
 
     /**
@@ -82,5 +82,19 @@ class ProductAttributeSetFacade extends AbstractFacade implements ProductAttribu
     public function getProductAttributeSets(): array
     {
         return $this->getFactory()->createProductAttributeSetReader()->getProductAttributeSets();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @api
+     *
+     * @param \Generated\Shared\Transfer\ProductAttributeSetTransfer $productAttributeSetTransfer
+     *
+     * @return array<string|null>
+     */
+    public function getProductManagementAttributeNames(ProductAttributeSetTransfer $productAttributeSetTransfer): array
+    {
+        return $this->getFactory()->createProductAttributeSetReader()->getProductManagementAttributeNames($productAttributeSetTransfer);
     }
 }

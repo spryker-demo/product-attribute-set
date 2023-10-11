@@ -18,6 +18,11 @@ class ProductAttributeSetDependencyProvider extends AbstractBundleDependencyProv
     public const FACADE_PRODUCT_ATTRIBUTE = 'FACADE_PRODUCT_ATTRIBUTE';
 
     /**
+     * @var string
+     */
+    public const FACADE_LOCALE = 'FACADE_LOCALE';
+
+    /**
      * @param \Spryker\Zed\Kernel\Container $container
      *
      * @return \Spryker\Zed\Kernel\Container
@@ -25,6 +30,7 @@ class ProductAttributeSetDependencyProvider extends AbstractBundleDependencyProv
     public function provideBusinessLayerDependencies(Container $container): Container
     {
         $container = $this->addProductAttributeFacade($container);
+        $container = $this->addLocaleFacade($container);
 
         return $container;
     }
@@ -38,6 +44,20 @@ class ProductAttributeSetDependencyProvider extends AbstractBundleDependencyProv
     {
         $container->set(static::FACADE_PRODUCT_ATTRIBUTE, function (Container $container) {
             return $container->getLocator()->productAttribute()->facade();
+        });
+
+        return $container;
+    }
+
+    /**
+     * @param \Spryker\Zed\Kernel\Container $container
+     *
+     * @return \Spryker\Zed\Kernel\Container
+     */
+    protected function addLocaleFacade(Container $container): Container
+    {
+        $container->set(static::FACADE_LOCALE, function (Container $container) {
+            return $container->getLocator()->locale()->facade();
         });
 
         return $container;

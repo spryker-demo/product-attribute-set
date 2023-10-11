@@ -8,6 +8,7 @@
 namespace SprykerDemo\Zed\ProductAttributeSet\Business;
 
 use Spryker\Zed\Kernel\Business\AbstractBusinessFactory;
+use Spryker\Zed\Locale\Business\LocaleFacadeInterface;
 use Spryker\Zed\ProductAttribute\Business\ProductAttributeFacadeInterface;
 use SprykerDemo\Zed\ProductAttributeSet\Business\Reader\ProductAttributeSetReader;
 use SprykerDemo\Zed\ProductAttributeSet\Business\Reader\ProductAttributeSetReaderInterface;
@@ -32,6 +33,18 @@ class ProductAttributeSetBusinessFactory extends AbstractBusinessFactory
      */
     public function createProductAttributeSetReader(): ProductAttributeSetReaderInterface
     {
-        return new ProductAttributeSetReader($this->getRepository(), $this->getProductAttributeFacade());
+        return new ProductAttributeSetReader(
+            $this->getRepository(),
+            $this->getProductAttributeFacade(),
+            $this->getLocaleFacade(),
+        );
+    }
+
+    /**
+     * @return \Spryker\Zed\Locale\Business\LocaleFacadeInterface
+     */
+    public function getLocaleFacade(): LocaleFacadeInterface
+    {
+        return $this->getProvidedDependency(ProductAttributeSetDependencyProvider::FACADE_LOCALE);
     }
 }

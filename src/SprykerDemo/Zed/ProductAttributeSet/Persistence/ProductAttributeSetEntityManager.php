@@ -45,35 +45,61 @@ class ProductAttributeSetEntityManager extends AbstractEntityManager implements 
                 $productAttributeSetTransfer->getIdProductAttributeSet(),
             );
         }
+        $updatedProductManagementAttributeIds = $productAttributeSetTransfer->getProductManagementAttributeIds();
 
         if (!$productAttributeSetEntity) {
             $productAttributeSetEntity = new SpyProductAttributeSet();
         }
 
-        $productAttributeSetEntity->fromArray($productAttributeSetTransfer->toArray());
+        $productAttributeSetEntity = $this->getFactory()->createProductAttributeSetMapper()
+            ->mapProductAttributeSetTransferToProductAttributeSetEntity(
+                $productAttributeSetEntity,
+                $productAttributeSetTransfer,
+            );
+
         $productAttributeSetEntity->save();
 
-        $existingProductManagementAttributeIds = array_map(static function (SpyProductAttributeSetToSpyProductManagementAttribute $relationEntity) {
-            return $relationEntity->getFkProductManagementAttribute();
-        }, $productAttributeSetEntity->getSpyProductAttributeSetToSpyProductManagementAttributes()->getArrayCopy());
-        $updatedProductManagementAttributeIds = $productAttributeSetTransfer->getProductManagementAttributeIds();
+        $productAttributeSetTransfer = $this->getFactory()->createProductAttributeSetMapper()
+            ->mapProductAttributeSetEntityToProductAttributeSetTransfer(
+                $productAttributeSetEntity,
+                new ProductAttributeSetTransfer(),
+            );
+        $productAttributeSetTransfer->setProductManagementAttributeIds($this->getProductManagementAttributeIds($productAttributeSetEntity));
+
+        $this->updateProductManagementAttribute(
+            $productAttributeSetTransfer,
+            $updatedProductManagementAttributeIds,
+        );
+
+        return $productAttributeSetTransfer;
+    }
+
+    /**
+     * @param \Generated\Shared\Transfer\ProductAttributeSetTransfer $productAttributeSetTransfer
+     * @param array<int|null> $updatedProductManagementAttributeIds
+     *
+     * @return void
+     */
+    protected function updateProductManagementAttribute(
+        ProductAttributeSetTransfer $productAttributeSetTransfer,
+        array $updatedProductManagementAttributeIds
+    ): void {
+        $existingProductManagementAttributeIds = $productAttributeSetTransfer->getProductManagementAttributeIds();
 
         $storeIdsToAdd = array_diff($updatedProductManagementAttributeIds, $existingProductManagementAttributeIds);
         $storeIdsToRemove = array_diff($existingProductManagementAttributeIds, $updatedProductManagementAttributeIds);
 
-        $this->createAttributeRelations($productAttributeSetEntity->getIdProductAttributeSet(), $storeIdsToAdd);
-        $this->deleteAttributeRelations($productAttributeSetEntity->getIdProductAttributeSet(), $storeIdsToRemove);
-
-        return (new ProductAttributeSetTransfer())->fromArray($productAttributeSetEntity->toArray(), true);
+        $this->createAttributeRelations($productAttributeSetTransfer->getIdProductAttributeSet(), $storeIdsToAdd);
+        $this->deleteAttributeRelations($productAttributeSetTransfer->getIdProductAttributeSet(), $storeIdsToRemove);
     }
 
     /**
-     * @param int $idAttributeSet
+     * @param int|null $idAttributeSet
      * @param array<int|null> $productManagementAttributeIds
      *
      * @return void
      */
-    protected function createAttributeRelations(int $idAttributeSet, array $productManagementAttributeIds): void
+    protected function createAttributeRelations(?int $idAttributeSet, array $productManagementAttributeIds): void
     {
         foreach ($productManagementAttributeIds as $idProductManagementAttribute) {
             (new SpyProductAttributeSetToSpyProductManagementAttribute())
@@ -84,12 +110,12 @@ class ProductAttributeSetEntityManager extends AbstractEntityManager implements 
     }
 
     /**
-     * @param int $idAttributeSet
+     * @param int|null $idAttributeSet
      * @param array<int|null> $productManagementAttributeIds
      *
      * @return void
      */
-    public function deleteAttributeRelations(int $idAttributeSet, array $productManagementAttributeIds): void
+    public function deleteAttributeRelations(?int $idAttributeSet, array $productManagementAttributeIds): void
     {
         if ($productManagementAttributeIds === []) {
             return;
@@ -99,7 +125,6 @@ class ProductAttributeSetEntityManager extends AbstractEntityManager implements 
             ->getSpyProductAttributeSetToSpyProductManagementAttributeQuery()
             ->filterByFkProductAttributeSet($idAttributeSet)
             ->filterByFkProductManagementAttribute_In($productManagementAttributeIds)
-            ->find()
             ->delete();
     }
 
@@ -119,5 +144,20 @@ class ProductAttributeSetEntityManager extends AbstractEntityManager implements 
                 $productAttributeSetEntity->delete();
             }
         }
+    }
+
+    /**
+     * @param \Orm\Zed\ProductAttributeSet\Persistence\SpyProductAttributeSet $productAttributeSetEntity
+     *
+     * @return array<int|null>
+     */
+    protected function getProductManagementAttributeIds(SpyProductAttributeSet $productAttributeSetEntity): array
+    {
+        $productManagementAttributeIds = [];
+        foreach ($productAttributeSetEntity->getSpyProductAttributeSetToSpyProductManagementAttributes()->getArrayCopy() as $relationEntity) {
+            $productManagementAttributeIds[] = $relationEntity->getFkProductManagementAttribute();
+        }
+
+        return $productManagementAttributeIds;
     }
 }

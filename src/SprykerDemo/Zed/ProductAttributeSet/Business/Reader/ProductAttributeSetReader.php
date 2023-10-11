@@ -9,6 +9,7 @@ namespace SprykerDemo\Zed\ProductAttributeSet\Business\Reader;
 
 use Generated\Shared\Transfer\ProductAttributeSetCriteriaTransfer;
 use Generated\Shared\Transfer\ProductAttributeSetTransfer;
+use Spryker\Zed\Locale\Business\LocaleFacadeInterface;
 use Spryker\Zed\ProductAttribute\Business\ProductAttributeFacadeInterface;
 use SprykerDemo\Zed\ProductAttributeSet\Persistence\ProductAttributeSetRepositoryInterface;
 
@@ -25,15 +26,23 @@ class ProductAttributeSetReader implements ProductAttributeSetReaderInterface
     protected ProductAttributeFacadeInterface $productAttributeFacade;
 
     /**
+     * @var \Spryker\Zed\Locale\Business\LocaleFacadeInterface
+     */
+    protected LocaleFacadeInterface $localeFacade;
+
+    /**
      * @param \SprykerDemo\Zed\ProductAttributeSet\Persistence\ProductAttributeSetRepositoryInterface $repository
      * @param \Spryker\Zed\ProductAttribute\Business\ProductAttributeFacadeInterface $productAttributeFacade
+     * @param \Spryker\Zed\Locale\Business\LocaleFacadeInterface $localeFacade
      */
     public function __construct(
         ProductAttributeSetRepositoryInterface $repository,
-        ProductAttributeFacadeInterface $productAttributeFacade
+        ProductAttributeFacadeInterface $productAttributeFacade,
+        LocaleFacadeInterface $localeFacade
     ) {
         $this->repository = $repository;
         $this->productAttributeFacade = $productAttributeFacade;
+        $this->localeFacade = $localeFacade;
     }
 
     /**
@@ -63,7 +72,7 @@ class ProductAttributeSetReader implements ProductAttributeSetReaderInterface
      *
      * @return \Generated\Shared\Transfer\ProductAttributeSetTransfer|null
      */
-    public function getProductAttributeSetByName(string $name): ?ProductAttributeSetTransfer
+    public function findProductAttributeSetByName(string $name): ?ProductAttributeSetTransfer
     {
         $productAttributeSetCriteriaTransfer = new ProductAttributeSetCriteriaTransfer();
         $productAttributeSetCriteriaTransfer->setName($name);
@@ -109,5 +118,25 @@ class ProductAttributeSetReader implements ProductAttributeSetReaderInterface
         }
 
         return $productAttributeSetTransfer;
+    }
+
+    /**
+     * @param \Generated\Shared\Transfer\ProductAttributeSetTransfer $productAttributeSetTransfer
+     *
+     * @return array<string|null>
+     */
+    public function getProductManagementAttributeNames(ProductAttributeSetTransfer $productAttributeSetTransfer): array
+    {
+        $currentLocale = $this->localeFacade->getCurrentLocale();
+        $productManagementAttributeNames = [];
+        foreach ($productAttributeSetTransfer->getProductManagementAttributes() as $productManagementAttributeTransfer) {
+            foreach ($productManagementAttributeTransfer->getLocalizedKeys() as $localizedKey) {
+                if ($currentLocale->getLocaleName() === $localizedKey->getLocaleName()) {
+                    $productManagementAttributeNames[] = $localizedKey->getKeyTranslation();
+                }
+            }
+        }
+
+        return $productManagementAttributeNames;
     }
 }

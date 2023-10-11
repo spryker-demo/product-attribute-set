@@ -9,7 +9,6 @@ namespace SprykerDemo\Zed\ProductAttributeSet\Persistence\Propel\Mapper;
 
 use Generated\Shared\Transfer\ProductAttributeSetTransfer;
 use Orm\Zed\ProductAttributeSet\Persistence\SpyProductAttributeSet;
-use Orm\Zed\ProductAttributeSet\Persistence\SpyProductAttributeSetToSpyProductManagementAttribute;
 
 class ProductAttributeSetMapper
 {
@@ -23,13 +22,21 @@ class ProductAttributeSetMapper
         SpyProductAttributeSet $productAttributeSetEntity,
         ProductAttributeSetTransfer $productAttributeSetTransfer
     ): ProductAttributeSetTransfer {
-        $productManagementAttributeIds = array_map(static function (SpyProductAttributeSetToSpyProductManagementAttribute $relationEntity) {
-            return $relationEntity->getFkProductManagementAttribute();
-        }, $productAttributeSetEntity->getSpyProductAttributeSetToSpyProductManagementAttributes()->getArrayCopy());
-
         $productAttributeSetTransfer->fromArray($productAttributeSetEntity->toArray(), true);
-        $productAttributeSetTransfer->setProductManagementAttributeIds($productManagementAttributeIds);
 
         return $productAttributeSetTransfer;
+    }
+
+    /**
+     * @param \Orm\Zed\ProductAttributeSet\Persistence\SpyProductAttributeSet $productAttributeSetEntity
+     * @param \Generated\Shared\Transfer\ProductAttributeSetTransfer $productAttributeSetTransfer
+     *
+     * @return \Orm\Zed\ProductAttributeSet\Persistence\SpyProductAttributeSet
+     */
+    public function mapProductAttributeSetTransferToProductAttributeSetEntity(
+        SpyProductAttributeSet $productAttributeSetEntity,
+        ProductAttributeSetTransfer $productAttributeSetTransfer
+    ): SpyProductAttributeSet {
+        return $productAttributeSetEntity->fromArray($productAttributeSetTransfer->toArray());
     }
 }

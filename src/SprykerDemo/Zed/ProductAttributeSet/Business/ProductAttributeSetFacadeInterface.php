@@ -68,4 +68,16 @@ interface ProductAttributeSetFacadeInterface
      * @return array<\Generated\Shared\Transfer\ProductAttributeSetTransfer>
      */
     public function getProductAttributeSets(): array;
+
+    /**
+     * Specification:
+     * - Gets product management attribute names of a specific product attribute set.
+     *
+     * @api
+     *
+     * @param \Generated\Shared\Transfer\ProductAttributeSetTransfer $productAttributeSetTransfer
+     *
+     * @return array<string|null>
+     */
+    public function getProductManagementAttributeNames(ProductAttributeSetTransfer $productAttributeSetTransfer): array;
 }

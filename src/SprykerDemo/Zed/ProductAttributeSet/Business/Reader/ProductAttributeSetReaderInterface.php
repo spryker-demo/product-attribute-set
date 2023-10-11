@@ -23,10 +23,17 @@ interface ProductAttributeSetReaderInterface
      *
      * @return \Generated\Shared\Transfer\ProductAttributeSetTransfer|null
      */
-    public function getProductAttributeSetByName(string $name): ?ProductAttributeSetTransfer;
+    public function findProductAttributeSetByName(string $name): ?ProductAttributeSetTransfer;
 
     /**
      * @return array<\Generated\Shared\Transfer\ProductAttributeSetTransfer>
      */
     public function getProductAttributeSets(): array;
+
+    /**
+     * @param \Generated\Shared\Transfer\ProductAttributeSetTransfer $productAttributeSetTransfer
+     *
+     * @return array<string|null>
+     */
+    public function getProductManagementAttributeNames(ProductAttributeSetTransfer $productAttributeSetTransfer): array;
 }
