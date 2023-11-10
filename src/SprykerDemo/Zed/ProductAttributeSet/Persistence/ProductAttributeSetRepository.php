@@ -26,7 +26,7 @@ class ProductAttributeSetRepository extends AbstractRepository implements Produc
     public function findProductAttributeSetByCriteria(ProductAttributeSetCriteriaTransfer $productAttributeSetCriteriaTransfer): ?ProductAttributeSetTransfer
     {
         $productAttributeSetQuery = $this->getFactory()->getProductAttributeSetQuery();
-        $productAttributeSetQuery = $this->applyFilters($productAttributeSetQuery, $productAttributeSetCriteriaTransfer);
+        $productAttributeSetQuery = $this->applyCriteria($productAttributeSetQuery, $productAttributeSetCriteriaTransfer);
 
         $productAttributeSetEntity = $productAttributeSetQuery->findOne();
         if (!$productAttributeSetEntity) {
@@ -61,7 +61,7 @@ class ProductAttributeSetRepository extends AbstractRepository implements Produc
      *
      * @return \Orm\Zed\ProductAttributeSet\Persistence\SpyProductAttributeSetQuery
      */
-    protected function applyFilters(
+    protected function applyCriteria(
         SpyProductAttributeSetQuery $productAttributeSetQuery,
         ProductAttributeSetCriteriaTransfer $productAttributeSetCriteriaTransfer
     ): SpyProductAttributeSetQuery {
@@ -70,6 +70,7 @@ class ProductAttributeSetRepository extends AbstractRepository implements Produc
                 $productAttributeSetCriteriaTransfer->getIdProductAttributeSet(),
             );
         }
+
         if ($productAttributeSetCriteriaTransfer->getName()) {
             $productAttributeSetQuery->filterByName(
                 $productAttributeSetCriteriaTransfer->getName(),
