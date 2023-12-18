@@ -7,6 +7,7 @@
 
 namespace SprykerDemo\Zed\ProductAttributeSet\Business;
 
+use Generated\Shared\Transfer\ProductAttributeSetCriteriaTransfer;
 use Generated\Shared\Transfer\ProductAttributeSetTransfer;
 
 interface ProductAttributeSetFacadeInterface
@@ -25,15 +26,15 @@ interface ProductAttributeSetFacadeInterface
 
     /**
      * Specification:
-     * - Finds product attribute set by name.
+     * - Checks if product attributes set exists by provided criteria transfer.
      *
      * @api
      *
-     * @param string $name
+     * @param \Generated\Shared\Transfer\ProductAttributeSetCriteriaTransfer $productAttributeSetCriteriaTransfer
      *
-     * @return \Generated\Shared\Transfer\ProductAttributeSetTransfer|null
+     * @return bool
      */
-    public function findProductAttributeSetByName(string $name): ?ProductAttributeSetTransfer;
+    public function productAttributeSetExists(ProductAttributeSetCriteriaTransfer $productAttributeSetCriteriaTransfer): bool;
 
     /**
      * Specification:
@@ -43,9 +44,9 @@ interface ProductAttributeSetFacadeInterface
      *
      * @param \Generated\Shared\Transfer\ProductAttributeSetTransfer $productAttributeSetTransfer
      *
-     * @return \Generated\Shared\Transfer\ProductAttributeSetTransfer
+     * @return void
      */
-    public function saveProductAttributeSet(ProductAttributeSetTransfer $productAttributeSetTransfer): ProductAttributeSetTransfer;
+    public function saveProductAttributeSet(ProductAttributeSetTransfer $productAttributeSetTransfer): void;
 
     /**
      * Specification:
@@ -61,23 +62,11 @@ interface ProductAttributeSetFacadeInterface
 
     /**
      * Specification:
-     * - Returns all product attribute sets.
+     * - Returns product attribute set ids indexed by product attribute set name.
      *
      * @api
      *
-     * @return array<\Generated\Shared\Transfer\ProductAttributeSetTransfer>
+     * @return array<string, int>
      */
-    public function getProductAttributeSets(): array;
-
-    /**
-     * Specification:
-     * - Gets product management attribute names of a specific product attribute set.
-     *
-     * @api
-     *
-     * @param \Generated\Shared\Transfer\ProductAttributeSetTransfer $productAttributeSetTransfer
-     *
-     * @return array<string|null>
-     */
-    public function getProductManagementAttributeNames(ProductAttributeSetTransfer $productAttributeSetTransfer): array;
+    public function getProductAttributeSetIdsIndexedByName(): array;
 }

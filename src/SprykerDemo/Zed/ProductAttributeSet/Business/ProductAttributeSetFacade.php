@@ -7,6 +7,7 @@
 
 namespace SprykerDemo\Zed\ProductAttributeSet\Business;
 
+use Generated\Shared\Transfer\ProductAttributeSetCriteriaTransfer;
 use Generated\Shared\Transfer\ProductAttributeSetTransfer;
 use Spryker\Zed\Kernel\Business\AbstractFacade;
 
@@ -35,13 +36,13 @@ class ProductAttributeSetFacade extends AbstractFacade implements ProductAttribu
      *
      * @api
      *
-     * @param string $name
+     * @param \Generated\Shared\Transfer\ProductAttributeSetCriteriaTransfer $productAttributeSetCriteriaTransfer
      *
-     * @return \Generated\Shared\Transfer\ProductAttributeSetTransfer|null
+     * @return bool
      */
-    public function findProductAttributeSetByName(string $name): ?ProductAttributeSetTransfer
+    public function productAttributeSetExists(ProductAttributeSetCriteriaTransfer $productAttributeSetCriteriaTransfer): bool
     {
-        return $this->getFactory()->createProductAttributeSetReader()->findProductAttributeSetByName($name);
+        return $this->getFactory()->createProductAttributeSetReader()->productAttributeSetExists($productAttributeSetCriteriaTransfer);
     }
 
     /**
@@ -51,11 +52,11 @@ class ProductAttributeSetFacade extends AbstractFacade implements ProductAttribu
      *
      * @param \Generated\Shared\Transfer\ProductAttributeSetTransfer $productAttributeSetTransfer
      *
-     * @return \Generated\Shared\Transfer\ProductAttributeSetTransfer
+     * @return void
      */
-    public function saveProductAttributeSet(ProductAttributeSetTransfer $productAttributeSetTransfer): ProductAttributeSetTransfer
+    public function saveProductAttributeSet(ProductAttributeSetTransfer $productAttributeSetTransfer): void
     {
-        return $this->getEntityManager()->saveProductAttributeSet($productAttributeSetTransfer);
+        $this->getFactory()->createProductAttributeSetWriter()->saveProductAttributeSet($productAttributeSetTransfer);
     }
 
     /**
@@ -77,24 +78,10 @@ class ProductAttributeSetFacade extends AbstractFacade implements ProductAttribu
      *
      * @api
      *
-     * @return array<\Generated\Shared\Transfer\ProductAttributeSetTransfer>
+     * @return array<string, int>
      */
-    public function getProductAttributeSets(): array
+    public function getProductAttributeSetIdsIndexedByName(): array
     {
-        return $this->getFactory()->createProductAttributeSetReader()->getProductAttributeSets();
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @api
-     *
-     * @param \Generated\Shared\Transfer\ProductAttributeSetTransfer $productAttributeSetTransfer
-     *
-     * @return array<string|null>
-     */
-    public function getProductManagementAttributeNames(ProductAttributeSetTransfer $productAttributeSetTransfer): array
-    {
-        return $this->getFactory()->createProductAttributeSetReader()->getProductManagementAttributeNames($productAttributeSetTransfer);
+        return $this->getFactory()->createProductAttributeSetReader()->getProductAttributeSetIdsIndexedByName();
     }
 }

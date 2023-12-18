@@ -10,6 +10,7 @@ namespace SprykerDemo\Zed\ProductAttributeSet\Persistence;
 use Generated\Shared\Transfer\ProductAttributeSetTransfer;
 use Orm\Zed\ProductAttributeSet\Persistence\SpyProductAttributeSet;
 use Orm\Zed\ProductAttributeSet\Persistence\SpyProductAttributeSetToSpyProductManagementAttribute;
+use Propel\Runtime\Collection\ObjectCollection;
 use Spryker\Zed\Kernel\Persistence\AbstractEntityManager;
 use Spryker\Zed\Kernel\Persistence\EntityManager\TransactionTrait;
 
@@ -27,95 +28,46 @@ class ProductAttributeSetEntityManager extends AbstractEntityManager implements 
      */
     public function saveProductAttributeSet(ProductAttributeSetTransfer $productAttributeSetTransfer): ProductAttributeSetTransfer
     {
-        return $this->getTransactionHandler()->handleTransaction(function () use ($productAttributeSetTransfer): ProductAttributeSetTransfer {
-            return $this->executeSaveProductAttributeSet($productAttributeSetTransfer);
-        });
-    }
-
-    /**
-     * @param \Generated\Shared\Transfer\ProductAttributeSetTransfer $productAttributeSetTransfer
-     *
-     * @return \Generated\Shared\Transfer\ProductAttributeSetTransfer
-     */
-    protected function executeSaveProductAttributeSet(ProductAttributeSetTransfer $productAttributeSetTransfer): ProductAttributeSetTransfer
-    {
-        $productAttributeSetEntity = null;
-        if ($productAttributeSetTransfer->getIdProductAttributeSet()) {
-            $productAttributeSetEntity = $this->getFactory()->getProductAttributeSetQuery()->findOneByIdProductAttributeSet(
-                $productAttributeSetTransfer->getIdProductAttributeSet(),
-            );
-        }
-        $updatedProductManagementAttributeIds = $productAttributeSetTransfer->getProductManagementAttributeIds();
-
-        if (!$productAttributeSetEntity) {
-            $productAttributeSetEntity = new SpyProductAttributeSet();
-        }
-
-        $productAttributeSetEntity = $this->getFactory()->createProductAttributeSetMapper()
-            ->mapProductAttributeSetTransferToProductAttributeSetEntity(
-                $productAttributeSetEntity,
-                $productAttributeSetTransfer,
-            );
+        $productAttributeSetEntity = $this->getFactory()
+            ->createProductAttributeSetMapper()
+            ->mapProductAttributeSetTransferToProductAttributeSetEntity($productAttributeSetTransfer, new SpyProductAttributeSet());
 
         $productAttributeSetEntity->save();
 
-        $productAttributeSetTransfer = $this->getFactory()->createProductAttributeSetMapper()
-            ->mapProductAttributeSetEntityToProductAttributeSetTransfer(
-                $productAttributeSetEntity,
-                new ProductAttributeSetTransfer(),
-            );
-        $productAttributeSetTransfer->setProductManagementAttributeIds($this->getProductManagementAttributeIds($productAttributeSetEntity));
-
-        $this->updateProductManagementAttribute(
-            $productAttributeSetTransfer,
-            $updatedProductManagementAttributeIds,
-        );
+        $productAttributeSetTransfer->setIdProductAttributeSet($productAttributeSetEntity->getIdProductAttributeSet());
 
         return $productAttributeSetTransfer;
     }
 
     /**
-     * @param \Generated\Shared\Transfer\ProductAttributeSetTransfer $productAttributeSetTransfer
-     * @param array<int|null> $updatedProductManagementAttributeIds
+     * @param int $idAttributeSet
+     * @param array<int> $productManagementAttributeIds
      *
      * @return void
      */
-    protected function updateProductManagementAttribute(
-        ProductAttributeSetTransfer $productAttributeSetTransfer,
-        array $updatedProductManagementAttributeIds
-    ): void {
-        $existingProductManagementAttributeIds = $productAttributeSetTransfer->getProductManagementAttributeIds();
-
-        $storeIdsToAdd = array_diff($updatedProductManagementAttributeIds, $existingProductManagementAttributeIds);
-        $storeIdsToRemove = array_diff($existingProductManagementAttributeIds, $updatedProductManagementAttributeIds);
-
-        $this->createAttributeRelations($productAttributeSetTransfer->getIdProductAttributeSet(), $storeIdsToAdd);
-        $this->deleteAttributeRelations($productAttributeSetTransfer->getIdProductAttributeSet(), $storeIdsToRemove);
-    }
-
-    /**
-     * @param int|null $idAttributeSet
-     * @param array<int|null> $productManagementAttributeIds
-     *
-     * @return void
-     */
-    protected function createAttributeRelations(?int $idAttributeSet, array $productManagementAttributeIds): void
+    public function saveAttributeRelations(int $idAttributeSet, array $productManagementAttributeIds): void
     {
+        $propelCollection = new ObjectCollection();
+        $propelCollection->setModel(SpyProductAttributeSetToSpyProductManagementAttribute::class);
+
         foreach ($productManagementAttributeIds as $idProductManagementAttribute) {
-            (new SpyProductAttributeSetToSpyProductManagementAttribute())
+            $productSetProductManagementAttributeEntity = (new SpyProductAttributeSetToSpyProductManagementAttribute())
                 ->setFkProductAttributeSet($idAttributeSet)
-                ->setFkProductManagementAttribute($idProductManagementAttribute)
-                ->save();
+                ->setFkProductManagementAttribute($idProductManagementAttribute);
+
+            $propelCollection->append($productSetProductManagementAttributeEntity);
         }
+
+        $propelCollection->save();
     }
 
     /**
-     * @param int|null $idAttributeSet
-     * @param array<int|null> $productManagementAttributeIds
+     * @param int $idAttributeSet
+     * @param array<int> $productManagementAttributeIds
      *
      * @return void
      */
-    public function deleteAttributeRelations(?int $idAttributeSet, array $productManagementAttributeIds): void
+    public function deleteAttributeRelations(int $idAttributeSet, array $productManagementAttributeIds): void
     {
         if ($productManagementAttributeIds === []) {
             return;
@@ -135,29 +87,13 @@ class ProductAttributeSetEntityManager extends AbstractEntityManager implements 
      */
     public function deleteProductAttributeSet(ProductAttributeSetTransfer $productAttributeSetTransfer): void
     {
-        if ($productAttributeSetTransfer->getIdProductAttributeSet()) {
-            $productAttributeSetEntity = $this->getFactory()->getProductAttributeSetQuery()->findOneByIdProductAttributeSet(
-                $productAttributeSetTransfer->getIdProductAttributeSet(),
-            );
-
-            if ($productAttributeSetEntity) {
-                $productAttributeSetEntity->delete();
-            }
-        }
-    }
-
-    /**
-     * @param \Orm\Zed\ProductAttributeSet\Persistence\SpyProductAttributeSet $productAttributeSetEntity
-     *
-     * @return array<int|null>
-     */
-    protected function getProductManagementAttributeIds(SpyProductAttributeSet $productAttributeSetEntity): array
-    {
-        $productManagementAttributeIds = [];
-        foreach ($productAttributeSetEntity->getSpyProductAttributeSetToSpyProductManagementAttributes()->getArrayCopy() as $relationEntity) {
-            $productManagementAttributeIds[] = $relationEntity->getFkProductManagementAttribute();
+        if (!$productAttributeSetTransfer->getIdProductAttributeSet()) {
+            return;
         }
 
-        return $productManagementAttributeIds;
+        $this->getFactory()
+            ->getProductAttributeSetQuery()
+            ->filterByIdProductAttributeSet($productAttributeSetTransfer->getIdProductAttributeSet())
+            ->delete();
     }
 }

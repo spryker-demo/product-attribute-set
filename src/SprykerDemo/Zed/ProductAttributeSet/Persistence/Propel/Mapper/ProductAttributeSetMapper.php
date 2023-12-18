@@ -24,19 +24,40 @@ class ProductAttributeSetMapper
     ): ProductAttributeSetTransfer {
         $productAttributeSetTransfer->fromArray($productAttributeSetEntity->toArray(), true);
 
+        $productManagementAttributeIds = $this->getProductManagementAttributeIds($productAttributeSetEntity);
+        $productAttributeSetTransfer->setProductManagementAttributeIds($productManagementAttributeIds);
+
         return $productAttributeSetTransfer;
     }
 
     /**
-     * @param \Orm\Zed\ProductAttributeSet\Persistence\SpyProductAttributeSet $productAttributeSetEntity
      * @param \Generated\Shared\Transfer\ProductAttributeSetTransfer $productAttributeSetTransfer
+     * @param \Orm\Zed\ProductAttributeSet\Persistence\SpyProductAttributeSet $productAttributeSetEntity
      *
      * @return \Orm\Zed\ProductAttributeSet\Persistence\SpyProductAttributeSet
      */
     public function mapProductAttributeSetTransferToProductAttributeSetEntity(
-        SpyProductAttributeSet $productAttributeSetEntity,
-        ProductAttributeSetTransfer $productAttributeSetTransfer
+        ProductAttributeSetTransfer $productAttributeSetTransfer,
+        SpyProductAttributeSet $productAttributeSetEntity
     ): SpyProductAttributeSet {
-        return $productAttributeSetEntity->fromArray($productAttributeSetTransfer->toArray());
+        $productAttributeSetEntity->fromArray($productAttributeSetTransfer->toArray());
+        $productAttributeSetEntity->setNew($productAttributeSetTransfer->getIdProductAttributeSet() === null);
+
+        return $productAttributeSetEntity;
+    }
+
+    /**
+     * @param \Orm\Zed\ProductAttributeSet\Persistence\SpyProductAttributeSet $productAttributeSetEntity
+     *
+     * @return array<int|null>
+     */
+    protected function getProductManagementAttributeIds(SpyProductAttributeSet $productAttributeSetEntity): array
+    {
+        $productManagementAttributeIds = [];
+        foreach ($productAttributeSetEntity->getSpyProductAttributeSetToSpyProductManagementAttributes() as $relationEntity) {
+            $productManagementAttributeIds[] = $relationEntity->getFkProductManagementAttribute();
+        }
+
+        return $productManagementAttributeIds;
     }
 }

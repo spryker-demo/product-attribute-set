@@ -9,8 +9,10 @@ namespace SprykerDemo\Zed\ProductAttributeSet\Persistence;
 
 use Generated\Shared\Transfer\ProductAttributeSetCriteriaTransfer;
 use Generated\Shared\Transfer\ProductAttributeSetTransfer;
-use Orm\Zed\ProductAttributeSet\Persistence\SpyProductAttributeSet;
+use Generated\Shared\Transfer\SpyProductAttributeSetEntityTransfer;
+use Generated\Shared\Transfer\SpyProductAttributeSetToSpyProductManagementAttributeEntityTransfer;
 use Orm\Zed\ProductAttributeSet\Persistence\SpyProductAttributeSetQuery;
+use Propel\Runtime\ActiveQuery\Criteria;
 use Spryker\Zed\Kernel\Persistence\AbstractRepository;
 
 /**
@@ -25,34 +27,56 @@ class ProductAttributeSetRepository extends AbstractRepository implements Produc
      */
     public function findProductAttributeSetByCriteria(ProductAttributeSetCriteriaTransfer $productAttributeSetCriteriaTransfer): ?ProductAttributeSetTransfer
     {
-        $productAttributeSetQuery = $this->getFactory()->getProductAttributeSetQuery();
+        $productAttributeSetQuery = $this->getFactory()
+            ->getProductAttributeSetQuery()
+            ->joinWithSpyProductAttributeSetToSpyProductManagementAttribute();
         $productAttributeSetQuery = $this->applyCriteria($productAttributeSetQuery, $productAttributeSetCriteriaTransfer);
 
-        $productAttributeSetEntity = $productAttributeSetQuery->findOne();
+        $productAttributeSetEntity = $productAttributeSetQuery->find()->getFirst();
         if (!$productAttributeSetEntity) {
             return null;
         }
-        $productManagementAttributeIds = $this->getProductManagementAttributeIds($productAttributeSetEntity);
-        $productAttributeSetTransfer = (new ProductAttributeSetTransfer())->setProductManagementAttributeIds($productManagementAttributeIds);
 
         return $this->getFactory()->createProductAttributeSetMapper()
-            ->mapProductAttributeSetEntityToProductAttributeSetTransfer($productAttributeSetEntity, $productAttributeSetTransfer);
+            ->mapProductAttributeSetEntityToProductAttributeSetTransfer($productAttributeSetEntity, new ProductAttributeSetTransfer());
     }
 
     /**
-     * @return array<\Generated\Shared\Transfer\ProductAttributeSetTransfer>
+     * @return array<string, int>
      */
-    public function getProductAttributeSets(): array
+    public function getProductAttributeSetIdsIndexedByName(): array
     {
-        $productAttributeSetsEntities = $this->getFactory()->getProductAttributeSetQuery()->find();
+        return $this->getFactory()
+            ->getProductAttributeSetQuery()
+            ->find()
+            ->toKeyValue(SpyProductAttributeSetEntityTransfer::NAME, SpyProductAttributeSetEntityTransfer::ID_PRODUCT_ATTRIBUTE_SET);
+    }
 
-        $productAttributeSetsTransfers = [];
-        foreach ($productAttributeSetsEntities as $productAttributeSetEntity) {
-            $productAttributeSetsTransfers[] = $this->getFactory()->createProductAttributeSetMapper()
-                ->mapProductAttributeSetEntityToProductAttributeSetTransfer($productAttributeSetEntity, new ProductAttributeSetTransfer());
-        }
+    /**
+     * @param \Generated\Shared\Transfer\ProductAttributeSetCriteriaTransfer $productAttributeSetCriteriaTransfer
+     *
+     * @return bool
+     */
+    public function productAttributeSetExists(ProductAttributeSetCriteriaTransfer $productAttributeSetCriteriaTransfer): bool
+    {
+        $productAttributeSetQuery = $this->getFactory()->getProductAttributeSetQuery();
+        $productAttributeSetQuery = $this->applyCriteria($productAttributeSetQuery, $productAttributeSetCriteriaTransfer);
 
-        return $productAttributeSetsTransfers;
+        return $productAttributeSetQuery->exists();
+    }
+
+    /**
+     * @param int $idProductAttributeSet
+     *
+     * @return array<int>
+     */
+    public function getExistingProductManagementAttributeIds(int $idProductAttributeSet): array
+    {
+        return $this->getFactory()
+            ->getSpyProductAttributeSetToSpyProductManagementAttributeQuery()
+            ->filterByFkProductAttributeSet($idProductAttributeSet)
+            ->find()
+            ->getColumnValues(SpyProductAttributeSetToSpyProductManagementAttributeEntityTransfer::FK_PRODUCT_MANAGEMENT_ATTRIBUTE);
     }
 
     /**
@@ -77,21 +101,13 @@ class ProductAttributeSetRepository extends AbstractRepository implements Produc
             );
         }
 
-        return $productAttributeSetQuery;
-    }
-
-    /**
-     * @param \Orm\Zed\ProductAttributeSet\Persistence\SpyProductAttributeSet $productAttributeSetEntity
-     *
-     * @return array<int|null>
-     */
-    protected function getProductManagementAttributeIds(SpyProductAttributeSet $productAttributeSetEntity): array
-    {
-        $productManagementAttributeIds = [];
-        foreach ($productAttributeSetEntity->getSpyProductAttributeSetToSpyProductManagementAttributes()->getArrayCopy() as $relationEntity) {
-            $productManagementAttributeIds[] = $relationEntity->getFkProductManagementAttribute();
+        if ($productAttributeSetCriteriaTransfer->getExcludedProductAttributeSetId()) {
+            $productAttributeSetQuery->filterByIdProductAttributeSet(
+                $productAttributeSetCriteriaTransfer->getExcludedProductAttributeSetId(),
+                Criteria::NOT_EQUAL,
+            );
         }
 
-        return $productManagementAttributeIds;
+        return $productAttributeSetQuery;
     }
 }

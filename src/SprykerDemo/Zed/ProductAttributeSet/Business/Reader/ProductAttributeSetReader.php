@@ -9,7 +9,6 @@ namespace SprykerDemo\Zed\ProductAttributeSet\Business\Reader;
 
 use Generated\Shared\Transfer\ProductAttributeSetCriteriaTransfer;
 use Generated\Shared\Transfer\ProductAttributeSetTransfer;
-use Spryker\Zed\Locale\Business\LocaleFacadeInterface;
 use Spryker\Zed\ProductAttribute\Business\ProductAttributeFacadeInterface;
 use SprykerDemo\Zed\ProductAttributeSet\Persistence\ProductAttributeSetRepositoryInterface;
 
@@ -26,23 +25,15 @@ class ProductAttributeSetReader implements ProductAttributeSetReaderInterface
     protected ProductAttributeFacadeInterface $productAttributeFacade;
 
     /**
-     * @var \Spryker\Zed\Locale\Business\LocaleFacadeInterface
-     */
-    protected LocaleFacadeInterface $localeFacade;
-
-    /**
      * @param \SprykerDemo\Zed\ProductAttributeSet\Persistence\ProductAttributeSetRepositoryInterface $repository
      * @param \Spryker\Zed\ProductAttribute\Business\ProductAttributeFacadeInterface $productAttributeFacade
-     * @param \Spryker\Zed\Locale\Business\LocaleFacadeInterface $localeFacade
      */
     public function __construct(
         ProductAttributeSetRepositoryInterface $repository,
-        ProductAttributeFacadeInterface $productAttributeFacade,
-        LocaleFacadeInterface $localeFacade
+        ProductAttributeFacadeInterface $productAttributeFacade
     ) {
         $this->repository = $repository;
         $this->productAttributeFacade = $productAttributeFacade;
-        $this->localeFacade = $localeFacade;
     }
 
     /**
@@ -68,31 +59,21 @@ class ProductAttributeSetReader implements ProductAttributeSetReaderInterface
     }
 
     /**
-     * @param string $name
+     * @param \Generated\Shared\Transfer\ProductAttributeSetCriteriaTransfer $productAttributeSetCriteriaTransfer
      *
-     * @return \Generated\Shared\Transfer\ProductAttributeSetTransfer|null
+     * @return bool
      */
-    public function findProductAttributeSetByName(string $name): ?ProductAttributeSetTransfer
+    public function productAttributeSetExists(ProductAttributeSetCriteriaTransfer $productAttributeSetCriteriaTransfer): bool
     {
-        $productAttributeSetCriteriaTransfer = new ProductAttributeSetCriteriaTransfer();
-        $productAttributeSetCriteriaTransfer->setName($name);
-
-        return $this->repository->findProductAttributeSetByCriteria($productAttributeSetCriteriaTransfer);
+        return $this->repository->productAttributeSetExists($productAttributeSetCriteriaTransfer);
     }
 
     /**
-     * @return array<\Generated\Shared\Transfer\ProductAttributeSetTransfer>
+     * @return array<string, int>
      */
-    public function getProductAttributeSets(): array
+    public function getProductAttributeSetIdsIndexedByName(): array
     {
-        $productAttributeSets = $this->repository->getProductAttributeSets();
-        $productManagementAttributeCollectionTransfer = $this->productAttributeFacade->getProductAttributeCollection();
-
-        foreach ($productAttributeSets as $productAttributeSetTransfer) {
-            $this->addProductManagementAttributesToProductAttributeSet($productAttributeSetTransfer, $productManagementAttributeCollectionTransfer);
-        }
-
-        return $productAttributeSets;
+        return $this->repository->getProductAttributeSetIdsIndexedByName();
     }
 
     /**
@@ -118,25 +99,5 @@ class ProductAttributeSetReader implements ProductAttributeSetReaderInterface
         }
 
         return $productAttributeSetTransfer;
-    }
-
-    /**
-     * @param \Generated\Shared\Transfer\ProductAttributeSetTransfer $productAttributeSetTransfer
-     *
-     * @return array<string|null>
-     */
-    public function getProductManagementAttributeNames(ProductAttributeSetTransfer $productAttributeSetTransfer): array
-    {
-        $currentLocale = $this->localeFacade->getCurrentLocale();
-        $productManagementAttributeNames = [];
-        foreach ($productAttributeSetTransfer->getProductManagementAttributes() as $productManagementAttributeTransfer) {
-            foreach ($productManagementAttributeTransfer->getLocalizedKeys() as $localizedKey) {
-                if ($currentLocale->getLocaleName() === $localizedKey->getLocaleName()) {
-                    $productManagementAttributeNames[] = $localizedKey->getKeyTranslation();
-                }
-            }
-        }
-
-        return $productManagementAttributeNames;
     }
 }

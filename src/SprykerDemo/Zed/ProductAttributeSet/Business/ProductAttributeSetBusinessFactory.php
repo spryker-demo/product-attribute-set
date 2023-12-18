@@ -8,10 +8,11 @@
 namespace SprykerDemo\Zed\ProductAttributeSet\Business;
 
 use Spryker\Zed\Kernel\Business\AbstractBusinessFactory;
-use Spryker\Zed\Locale\Business\LocaleFacadeInterface;
 use Spryker\Zed\ProductAttribute\Business\ProductAttributeFacadeInterface;
 use SprykerDemo\Zed\ProductAttributeSet\Business\Reader\ProductAttributeSetReader;
 use SprykerDemo\Zed\ProductAttributeSet\Business\Reader\ProductAttributeSetReaderInterface;
+use SprykerDemo\Zed\ProductAttributeSet\Business\Writer\ProductAttributeSetWriter;
+use SprykerDemo\Zed\ProductAttributeSet\Business\Writer\ProductAttributeSetWriterInterface;
 use SprykerDemo\Zed\ProductAttributeSet\ProductAttributeSetDependencyProvider;
 
 /**
@@ -21,14 +22,6 @@ use SprykerDemo\Zed\ProductAttributeSet\ProductAttributeSetDependencyProvider;
 class ProductAttributeSetBusinessFactory extends AbstractBusinessFactory
 {
     /**
-     * @return \Spryker\Zed\ProductAttribute\Business\ProductAttributeFacadeInterface
-     */
-    public function getProductAttributeFacade(): ProductAttributeFacadeInterface
-    {
-        return $this->getProvidedDependency(ProductAttributeSetDependencyProvider::FACADE_PRODUCT_ATTRIBUTE);
-    }
-
-    /**
      * @return \SprykerDemo\Zed\ProductAttributeSet\Business\Reader\ProductAttributeSetReaderInterface
      */
     public function createProductAttributeSetReader(): ProductAttributeSetReaderInterface
@@ -36,15 +29,22 @@ class ProductAttributeSetBusinessFactory extends AbstractBusinessFactory
         return new ProductAttributeSetReader(
             $this->getRepository(),
             $this->getProductAttributeFacade(),
-            $this->getLocaleFacade(),
         );
     }
 
     /**
-     * @return \Spryker\Zed\Locale\Business\LocaleFacadeInterface
+     * @return \SprykerDemo\Zed\ProductAttributeSet\Business\Writer\ProductAttributeSetWriterInterface
      */
-    public function getLocaleFacade(): LocaleFacadeInterface
+    public function createProductAttributeSetWriter(): ProductAttributeSetWriterInterface
     {
-        return $this->getProvidedDependency(ProductAttributeSetDependencyProvider::FACADE_LOCALE);
+        return new ProductAttributeSetWriter($this->getEntityManager(), $this->getRepository());
+    }
+
+    /**
+     * @return \Spryker\Zed\ProductAttribute\Business\ProductAttributeFacadeInterface
+     */
+    public function getProductAttributeFacade(): ProductAttributeFacadeInterface
+    {
+        return $this->getProvidedDependency(ProductAttributeSetDependencyProvider::FACADE_PRODUCT_ATTRIBUTE);
     }
 }

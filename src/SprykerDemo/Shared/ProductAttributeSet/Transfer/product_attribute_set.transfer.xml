@@ -9,6 +9,7 @@
 
     <transfer name="ProductAttributeSetCriteria">
         <property name="idProductAttributeSet" type="int"/>
+        <property name="excludedProductAttributeSetId" type="int"/>
         <property name="name" type="string"/>
     </transfer>
 </transfers>

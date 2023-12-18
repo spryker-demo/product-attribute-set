@@ -7,6 +7,7 @@
 
 namespace SprykerDemo\Zed\ProductAttributeSet\Business\Reader;
 
+use Generated\Shared\Transfer\ProductAttributeSetCriteriaTransfer;
 use Generated\Shared\Transfer\ProductAttributeSetTransfer;
 
 interface ProductAttributeSetReaderInterface
@@ -19,21 +20,14 @@ interface ProductAttributeSetReaderInterface
     public function findProductAttributeSetById(int $idProductAttributeSet): ?ProductAttributeSetTransfer;
 
     /**
-     * @param string $name
+     * @param \Generated\Shared\Transfer\ProductAttributeSetCriteriaTransfer $productAttributeSetCriteriaTransfer
      *
-     * @return \Generated\Shared\Transfer\ProductAttributeSetTransfer|null
+     * @return bool
      */
-    public function findProductAttributeSetByName(string $name): ?ProductAttributeSetTransfer;
+    public function productAttributeSetExists(ProductAttributeSetCriteriaTransfer $productAttributeSetCriteriaTransfer): bool;
 
     /**
-     * @return array<\Generated\Shared\Transfer\ProductAttributeSetTransfer>
+     * @return array<string, int>
      */
-    public function getProductAttributeSets(): array;
-
-    /**
-     * @param \Generated\Shared\Transfer\ProductAttributeSetTransfer $productAttributeSetTransfer
-     *
-     * @return array<string|null>
-     */
-    public function getProductManagementAttributeNames(ProductAttributeSetTransfer $productAttributeSetTransfer): array;
+    public function getProductAttributeSetIdsIndexedByName(): array;
 }

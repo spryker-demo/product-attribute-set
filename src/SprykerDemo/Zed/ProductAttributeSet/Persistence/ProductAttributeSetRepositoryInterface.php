@@ -20,7 +20,21 @@ interface ProductAttributeSetRepositoryInterface
     public function findProductAttributeSetByCriteria(ProductAttributeSetCriteriaTransfer $productAttributeSetCriteriaTransfer): ?ProductAttributeSetTransfer;
 
     /**
-     * @return array<\Generated\Shared\Transfer\ProductAttributeSetTransfer>
+     * @param \Generated\Shared\Transfer\ProductAttributeSetCriteriaTransfer $productAttributeSetCriteriaTransfer
+     *
+     * @return bool
      */
-    public function getProductAttributeSets(): array;
+    public function productAttributeSetExists(ProductAttributeSetCriteriaTransfer $productAttributeSetCriteriaTransfer): bool;
+
+    /**
+     * @return array<string, int>
+     */
+    public function getProductAttributeSetIdsIndexedByName(): array;
+
+    /**
+     * @param int $idProductAttributeSet
+     *
+     * @return array<int>
+     */
+    public function getExistingProductManagementAttributeIds(int $idProductAttributeSet): array;
 }

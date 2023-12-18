@@ -24,4 +24,20 @@ interface ProductAttributeSetEntityManagerInterface
      * @return void
      */
     public function deleteProductAttributeSet(ProductAttributeSetTransfer $productAttributeSetTransfer): void;
+
+    /**
+     * @param int $idAttributeSet
+     * @param array<int> $productManagementAttributeIds
+     *
+     * @return void
+     */
+    public function saveAttributeRelations(int $idAttributeSet, array $productManagementAttributeIds): void;
+
+    /**
+     * @param int $idAttributeSet
+     * @param array<int> $productManagementAttributeIds
+     *
+     * @return void
+     */
+    public function deleteAttributeRelations(int $idAttributeSet, array $productManagementAttributeIds): void;
 }
