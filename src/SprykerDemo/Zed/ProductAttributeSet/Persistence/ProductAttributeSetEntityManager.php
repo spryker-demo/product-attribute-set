@@ -12,15 +12,12 @@ use Orm\Zed\ProductAttributeSet\Persistence\SpyProductAttributeSet;
 use Orm\Zed\ProductAttributeSet\Persistence\SpyProductAttributeSetToSpyProductManagementAttribute;
 use Propel\Runtime\Collection\ObjectCollection;
 use Spryker\Zed\Kernel\Persistence\AbstractEntityManager;
-use Spryker\Zed\Kernel\Persistence\EntityManager\TransactionTrait;
 
 /**
  * @method \SprykerDemo\Zed\ProductAttributeSet\Persistence\ProductAttributeSetPersistenceFactory getFactory()
  */
 class ProductAttributeSetEntityManager extends AbstractEntityManager implements ProductAttributeSetEntityManagerInterface
 {
-    use TransactionTrait;
-
     /**
      * @param \Generated\Shared\Transfer\ProductAttributeSetTransfer $productAttributeSetTransfer
      *

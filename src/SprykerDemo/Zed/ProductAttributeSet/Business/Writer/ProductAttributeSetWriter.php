@@ -19,21 +19,23 @@ class ProductAttributeSetWriter implements ProductAttributeSetWriterInterface
     /**
      * @var \SprykerDemo\Zed\ProductAttributeSet\Persistence\ProductAttributeSetEntityManagerInterface
      */
-    protected ProductAttributeSetEntityManagerInterface $entityManager;
+    protected ProductAttributeSetEntityManagerInterface $productAttributeSetEntityManager;
 
     /**
      * @var \SprykerDemo\Zed\ProductAttributeSet\Persistence\ProductAttributeSetRepositoryInterface
      */
-    protected ProductAttributeSetRepositoryInterface $repository;
+    protected ProductAttributeSetRepositoryInterface $productAttributeSetRepository;
 
     /**
-     * @param \SprykerDemo\Zed\ProductAttributeSet\Persistence\ProductAttributeSetEntityManagerInterface $entityManager
-     * @param \SprykerDemo\Zed\ProductAttributeSet\Persistence\ProductAttributeSetRepositoryInterface $repository
+     * @param \SprykerDemo\Zed\ProductAttributeSet\Persistence\ProductAttributeSetEntityManagerInterface $productAttributeSetEntityManager
+     * @param \SprykerDemo\Zed\ProductAttributeSet\Persistence\ProductAttributeSetRepositoryInterface $productAttributeSetRepository
      */
-    public function __construct(ProductAttributeSetEntityManagerInterface $entityManager, ProductAttributeSetRepositoryInterface $repository)
-    {
-        $this->entityManager = $entityManager;
-        $this->repository = $repository;
+    public function __construct(
+        ProductAttributeSetEntityManagerInterface $productAttributeSetEntityManager,
+        ProductAttributeSetRepositoryInterface $productAttributeSetRepository
+    ) {
+        $this->productAttributeSetEntityManager = $productAttributeSetEntityManager;
+        $this->productAttributeSetRepository = $productAttributeSetRepository;
     }
 
     /**
@@ -55,26 +57,50 @@ class ProductAttributeSetWriter implements ProductAttributeSetWriterInterface
      */
     protected function executeSaveProductAttributeSet(ProductAttributeSetTransfer $productAttributeSetTransfer): void
     {
-        $isNew = $productAttributeSetTransfer->getIdProductAttributeSet() === null;
-
-        $productAttributeSetTransfer = $this->entityManager->saveProductAttributeSet($productAttributeSetTransfer);
-        $updatedProductManagementAttributeIds = $productAttributeSetTransfer->getProductManagementAttributeIds();
-
         if ($productAttributeSetTransfer->getIdProductAttributeSet() === null) {
-            return;
-        }
-
-        if ($isNew) {
-            $this->entityManager->saveAttributeRelations($productAttributeSetTransfer->getIdProductAttributeSet(), $updatedProductManagementAttributeIds);
+            $this->saveNewProductAttributeSet($productAttributeSetTransfer);
 
             return;
         }
 
-        $existingProductManagementAttributeIds = $this->repository->getExistingProductManagementAttributeIds($productAttributeSetTransfer->getIdProductAttributeSet());
+        $this->updateExistingProductAttributeSet($productAttributeSetTransfer);
+    }
+
+    /**
+     * @param \Generated\Shared\Transfer\ProductAttributeSetTransfer $productAttributeSetTransfer
+     *
+     * @return void
+     */
+    protected function saveNewProductAttributeSet(ProductAttributeSetTransfer $productAttributeSetTransfer): void
+    {
+        $productAttributeSetTransfer = $this->productAttributeSetEntityManager->saveProductAttributeSet($productAttributeSetTransfer);
+        $this->productAttributeSetEntityManager->saveAttributeRelations(
+            $productAttributeSetTransfer->getIdProductAttributeSetOrFail(),
+            $productAttributeSetTransfer->getProductManagementAttributeIds(),
+        );
+    }
+
+    /**
+     * @param \Generated\Shared\Transfer\ProductAttributeSetTransfer $productAttributeSetTransfer
+     *
+     * @return void
+     */
+    protected function updateExistingProductAttributeSet(ProductAttributeSetTransfer $productAttributeSetTransfer): void
+    {
+        $productAttributeSetTransfer = $this->productAttributeSetEntityManager->saveProductAttributeSet($productAttributeSetTransfer);
+        $updatedProductManagementAttributeIds = $productAttributeSetTransfer->getProductManagementAttributeIds();
+        $existingProductManagementAttributeIds = $this->productAttributeSetRepository
+            ->getExistingProductManagementAttributeIds($productAttributeSetTransfer->getIdProductAttributeSetOrFail());
         $productManagementAttributeIdsToAdd = array_diff($updatedProductManagementAttributeIds, $existingProductManagementAttributeIds);
         $productManagementAttributeIdsToRemove = array_diff($existingProductManagementAttributeIds, $updatedProductManagementAttributeIds);
 
-        $this->entityManager->saveAttributeRelations($productAttributeSetTransfer->getIdProductAttributeSet(), $productManagementAttributeIdsToAdd);
-        $this->entityManager->deleteAttributeRelations($productAttributeSetTransfer->getIdProductAttributeSet(), $productManagementAttributeIdsToRemove);
+        $this->productAttributeSetEntityManager->saveAttributeRelations(
+            $productAttributeSetTransfer->getIdProductAttributeSetOrFail(),
+            $productManagementAttributeIdsToAdd,
+        );
+        $this->productAttributeSetEntityManager->deleteAttributeRelations(
+            $productAttributeSetTransfer->getIdProductAttributeSetOrFail(),
+            $productManagementAttributeIdsToRemove,
+        );
     }
 }

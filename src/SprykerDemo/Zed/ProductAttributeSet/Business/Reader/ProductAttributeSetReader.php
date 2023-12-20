@@ -25,14 +25,14 @@ class ProductAttributeSetReader implements ProductAttributeSetReaderInterface
     protected ProductAttributeFacadeInterface $productAttributeFacade;
 
     /**
-     * @param \SprykerDemo\Zed\ProductAttributeSet\Persistence\ProductAttributeSetRepositoryInterface $repository
+     * @param \SprykerDemo\Zed\ProductAttributeSet\Persistence\ProductAttributeSetRepositoryInterface $productAttributeSetRepository
      * @param \Spryker\Zed\ProductAttribute\Business\ProductAttributeFacadeInterface $productAttributeFacade
      */
     public function __construct(
-        ProductAttributeSetRepositoryInterface $repository,
+        ProductAttributeSetRepositoryInterface $productAttributeSetRepository,
         ProductAttributeFacadeInterface $productAttributeFacade
     ) {
-        $this->repository = $repository;
+        $this->repository = $productAttributeSetRepository;
         $this->productAttributeFacade = $productAttributeFacade;
     }
 
