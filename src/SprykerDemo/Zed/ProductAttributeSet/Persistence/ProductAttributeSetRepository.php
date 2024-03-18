@@ -46,10 +46,18 @@ class ProductAttributeSetRepository extends AbstractRepository implements Produc
      */
     public function getProductAttributeSetIdsIndexedByName(): array
     {
-        return $this->getFactory()
+        /** @var \Propel\Runtime\Collection\ObjectCollection $productAttributeSets */
+        $productAttributeSets = $this->getFactory()
             ->getProductAttributeSetQuery()
-            ->find()
-            ->toKeyValue(SpyProductAttributeSetEntityTransfer::NAME, SpyProductAttributeSetEntityTransfer::ID_PRODUCT_ATTRIBUTE_SET);
+            ->find();
+
+        /** @var array<string, int> $productAttributeSetIdsIndexedByName */
+        $productAttributeSetIdsIndexedByName = $productAttributeSets->toKeyValue(
+            SpyProductAttributeSetEntityTransfer::NAME,
+            SpyProductAttributeSetEntityTransfer::ID_PRODUCT_ATTRIBUTE_SET
+        );
+
+        return $productAttributeSetIdsIndexedByName;
     }
 
     /**
@@ -72,11 +80,13 @@ class ProductAttributeSetRepository extends AbstractRepository implements Produc
      */
     public function getExistingProductManagementAttributeIds(int $idProductAttributeSet): array
     {
-        return $this->getFactory()
+        /** @var \Propel\Runtime\Collection\ObjectCollection $productAttributeSetToSpyProductManagementAttributeEntities */
+        $productAttributeSetToSpyProductManagementAttributeEntities =  $this->getFactory()
             ->getSpyProductAttributeSetToSpyProductManagementAttributeQuery()
             ->filterByFkProductAttributeSet($idProductAttributeSet)
-            ->find()
-            ->getColumnValues(SpyProductAttributeSetToSpyProductManagementAttributeEntityTransfer::FK_PRODUCT_MANAGEMENT_ATTRIBUTE);
+            ->find();
+
+        return $productAttributeSetToSpyProductManagementAttributeEntities->getColumnValues(SpyProductAttributeSetToSpyProductManagementAttributeEntityTransfer::FK_PRODUCT_MANAGEMENT_ATTRIBUTE);
     }
 
     /**
