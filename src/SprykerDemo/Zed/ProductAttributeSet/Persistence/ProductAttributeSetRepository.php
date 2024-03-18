@@ -54,7 +54,7 @@ class ProductAttributeSetRepository extends AbstractRepository implements Produc
         /** @var array<string, int> $productAttributeSetIdsIndexedByName */
         $productAttributeSetIdsIndexedByName = $productAttributeSets->toKeyValue(
             SpyProductAttributeSetEntityTransfer::NAME,
-            SpyProductAttributeSetEntityTransfer::ID_PRODUCT_ATTRIBUTE_SET
+            SpyProductAttributeSetEntityTransfer::ID_PRODUCT_ATTRIBUTE_SET,
         );
 
         return $productAttributeSetIdsIndexedByName;
@@ -81,7 +81,7 @@ class ProductAttributeSetRepository extends AbstractRepository implements Produc
     public function getExistingProductManagementAttributeIds(int $idProductAttributeSet): array
     {
         /** @var \Propel\Runtime\Collection\ObjectCollection $productAttributeSetToSpyProductManagementAttributeEntities */
-        $productAttributeSetToSpyProductManagementAttributeEntities =  $this->getFactory()
+        $productAttributeSetToSpyProductManagementAttributeEntities = $this->getFactory()
             ->getSpyProductAttributeSetToSpyProductManagementAttributeQuery()
             ->filterByFkProductAttributeSet($idProductAttributeSet)
             ->find();
