@@ -7,8 +7,10 @@
 
 namespace SprykerDemo\Zed\ProductAttributeSet\Business\Reader;
 
+use ArrayObject;
 use Generated\Shared\Transfer\ProductAttributeSetCriteriaTransfer;
 use Generated\Shared\Transfer\ProductAttributeSetTransfer;
+use Generated\Shared\Transfer\ProductManagementAttributeFilterTransfer;
 use Spryker\Zed\ProductAttribute\Business\ProductAttributeFacadeInterface;
 use SprykerDemo\Zed\ProductAttributeSet\Persistence\ProductAttributeSetRepositoryInterface;
 
@@ -52,8 +54,10 @@ class ProductAttributeSetReader implements ProductAttributeSetReaderInterface
             return null;
         }
 
-        $productManagementAttributeCollectionTransfer = $this->productAttributeFacade->getProductAttributeCollection();
-        $this->addProductManagementAttributesToProductAttributeSet($productAttributeSetTransfer, $productManagementAttributeCollectionTransfer);
+        $productManagementAttributeTransfers = $this->productAttributeFacade->getProductManagementAttributes(
+            new ProductManagementAttributeFilterTransfer(),
+        )->getProductManagementAttributes();
+        $this->addProductManagementAttributesToProductAttributeSet($productAttributeSetTransfer, $productManagementAttributeTransfers);
 
         return $productAttributeSetTransfer;
     }
@@ -78,15 +82,15 @@ class ProductAttributeSetReader implements ProductAttributeSetReaderInterface
 
     /**
      * @param \Generated\Shared\Transfer\ProductAttributeSetTransfer $productAttributeSetTransfer
-     * @param array<\Generated\Shared\Transfer\ProductManagementAttributeTransfer> $productManagementAttributeCollectionTransfer
+     * @param \ArrayObject $productManagementAttributeTransfers
      *
      * @return \Generated\Shared\Transfer\ProductAttributeSetTransfer
      */
     protected function addProductManagementAttributesToProductAttributeSet(
         ProductAttributeSetTransfer $productAttributeSetTransfer,
-        array $productManagementAttributeCollectionTransfer
+        ArrayObject $productManagementAttributeTransfers
     ): ProductAttributeSetTransfer {
-        foreach ($productManagementAttributeCollectionTransfer as $productManagementAttributeTransfer) {
+        foreach ($productManagementAttributeTransfers as $productManagementAttributeTransfer) {
             if (
                 in_array(
                     $productManagementAttributeTransfer->getIdProductManagementAttribute(),
