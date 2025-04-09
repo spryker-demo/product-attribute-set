@@ -4,7 +4,7 @@
     "description": "Product attribute set module",
     "license": "proprietary",
     "require": {
-        "php": ">=8.0",
+        "php": ">=8.2",
         "spryker/kernel": "^3.70.0",
         "spryker/product-attribute": "^1.10.0",
         "spryker/propel-orm": "^1.19.0"
